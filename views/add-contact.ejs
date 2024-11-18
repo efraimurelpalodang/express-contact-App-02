@@ -3,6 +3,20 @@
     <div class="col-md-6">
       <h2>Form Tambah Data Contact</h2>
 
+      <!-- Ketika ada error -->
+      <% if (typeof errors != 'undifined') { %>
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+          <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+          <div>
+            <ul>
+              <% errors.forEach(err => { %>
+                <li><%= err.msg %></li>
+              <% }) %>
+            </ul>
+          </div>
+        </div>
+      <% } %>
+
       <form method="post" action="/contact">
         <div class="mb-3">
           <label for="nama" class="form-label">Nama</label>

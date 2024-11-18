@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-const { loadContact, findContact, addContact } = require('./utils/contacts.js');
-const { body, validationResult } = require('express-validator');
+const { loadContact, findContact, addContact, cekDuplikat } = require('./utils/contacts.js');
+const { body, validationResult, check } = require('express-validator');
 
 //! memanggil express layout
 const expressLayouts = require('express-ejs-layouts');
@@ -69,15 +69,28 @@ app.get("/contact/add", (req, res) => {
 });
 
 // function validation
-const emailVal = () => body('email').isEmail();
-const noVal = () => body('nohp').isMobilePhone('id-ID');
+const emailVal = () => check('email', 'Email Tidak Valid Bro!!').isEmail();
+const noVal = () => check('nohp', 'noHp tidak valid bang!!').isMobilePhone('id-ID');
 
 
 // proses data contact
-app.post("/contact", [emailVal(), noVal()], (req, res) => {
+app.post("/contact", [ body('nama').custom((value) => {
+  const duplikat = cekDuplikat(value);
+  if(duplikat) {
+    throw new Error('Nama Yang Anda Masukkan Sudah Terdaftar!!');
+  }
+  return true;
+}),
+  emailVal(), 
+  noVal()
+], (req, res) => {
   const errors = validationResult(req);
   if(!errors.isEmpty()) {
-    return res.status(400).json({errors: errors.array() });
+    res.render("add-contact", {
+      tittle: "Form Tambah Data Contact",
+      layout: 'layouts/main-layout',
+      errors: errors.array(),
+    });
   }
 
   // addContact(req.body);
