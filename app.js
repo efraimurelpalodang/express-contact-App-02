@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-const { loadContact, findContact, addContact } = require('./utils/contacts.js')
+const { loadContact, findContact, addContact } = require('./utils/contacts.js');
+const { body, validationResult } = require('express-validator');
 
 //! memanggil express layout
 const expressLayouts = require('express-ejs-layouts');
@@ -12,7 +13,7 @@ app.set("view engine", "ejs");
 // Build in middleware
 app.use(express.static('public'));
 // Build in middleware untuk parse data yang user isi
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   const mahasiswa = [
@@ -67,10 +68,20 @@ app.get("/contact/add", (req, res) => {
   });
 });
 
+// function validation
+const emailVal = () => body('email').isEmail();
+const noVal = () => body('nohp').isMobilePhone('id-ID');
+
+
 // proses data contact
-app.post("/contact", (req, res) => {
-  addContact(req.body);
-  res.redirect('/contact');
+app.post("/contact", [emailVal(), noVal()], (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(400).json({errors: errors.array() });
+  }
+
+  // addContact(req.body);
+  // res.redirect('/contact');
 })
 
 // halaman detail contact
