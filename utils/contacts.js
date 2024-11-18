@@ -21,9 +21,23 @@ const loadContact = () => {
 
 // mencari contact berdasrkan nama
 const findContact = (nama) => {
-  const contacts = loadContact();
-  const contact = contacts.find((contact) => contact.nama.toLowerCase() === nama.toLowerCase());
-  return contact;
+    const contacts = loadContact();
+    const contact = contacts.find((contact) => contact.nama.toLowerCase() === nama.toLowerCase());
+    return contact;
 }
 
-module.exports = {loadContact, findContact};
+// menuliskan / menimpa file contacts.json dengan data yang baru
+const saveContacts = (contacts) => {
+    fs.writeFileSync('data/contacts.json', JSON.stringify(contacts));
+}
+
+
+// menambahkan data contact baru
+const addContact = (contact) => {
+    contacts = loadContact();
+    contacts.push(contact);
+    saveContacts(contacts);
+};
+
+
+module.exports = {loadContact, findContact, addContact};

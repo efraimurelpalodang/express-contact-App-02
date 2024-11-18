@@ -1,18 +1,18 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-const { loadContact, findContact } = require('./utils/contacts.js')
+const { loadContact, findContact, addContact } = require('./utils/contacts.js')
 
 //! memanggil express layout
 const expressLayouts = require('express-ejs-layouts');
 //! untuk menggunakan express layoutnya (third-party middleware punya express)
 app.use(expressLayouts);
-
 //? memberitahukan express kalo kita viewnya menggunakan ejs
 app.set("view engine", "ejs");
-
 // Build in middleware
 app.use(express.static('public'));
+// Build in middleware untuk parse data yang user isi
+app.use(express.urlencoded());
 
 app.get("/", (req, res) => {
   const mahasiswa = [
@@ -66,6 +66,12 @@ app.get("/contact/add", (req, res) => {
     layout: 'layouts/main-layout',
   });
 });
+
+// proses data contact
+app.post("/contact", (req, res) => {
+  addContact(req.body);
+  res.redirect('/contact');
+})
 
 // halaman detail contact
 app.get("/contact/:nama", (req, res) => {
