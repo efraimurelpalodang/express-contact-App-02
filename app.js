@@ -69,12 +69,12 @@ app.get("/contact/add", (req, res) => {
 });
 
 // function validation
-const emailVal = () => check('email', 'Email Tidak Valid Bro!!').isEmail();
-const noVal = () => check('nohp', 'noHp tidak valid bang!!').isMobilePhone('id-ID');
+const emailVal = () => check('email', 'Email anda tidak valid silahkan cek kembali!!').isEmail();
+const noVal = () => check('nohp', 'noHp tidak valid harap periksa lagi!!').isMobilePhone('id-ID');
 
 
 // proses data contact
-app.post("/contact", [ body('nama').custom((value) => {
+app.post('/contact', [ body('nama').custom((value) => {
   const duplikat = cekDuplikat(value);
   if(duplikat) {
     throw new Error('Nama Yang Anda Masukkan Sudah Terdaftar!!');
@@ -91,10 +91,11 @@ app.post("/contact", [ body('nama').custom((value) => {
       layout: 'layouts/main-layout',
       errors: errors.array(),
     });
+  } else {
+    addContact(req.body);
+    res.redirect('/contact');
   }
 
-  // addContact(req.body);
-  // res.redirect('/contact');
 })
 
 // halaman detail contact
