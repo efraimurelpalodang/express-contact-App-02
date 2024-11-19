@@ -3,6 +3,9 @@ const app = express();
 const port = 3000;
 const { loadContact, findContact, addContact, cekDuplikat } = require('./utils/contacts.js');
 const { body, validationResult, check } = require('express-validator');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
 
 //! memanggil express layout
 const expressLayouts = require('express-ejs-layouts');
@@ -14,6 +17,18 @@ app.set("view engine", "ejs");
 app.use(express.static('public'));
 // Build in middleware untuk parse data yang user isi
 app.use(express.urlencoded({ extended: true }));
+// konfigurasi flashnya
+app.use(cookieParser('secret'));
+app.use(session({
+  cookie: { maxAge: 6000 },
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(flash());
+
+
+
 
 app.get("/", (req, res) => {
   const mahasiswa = [
@@ -56,7 +71,8 @@ app.get("/contact", (req, res) => {
   res.render("contact", {
     layout : 'layouts/main-layout',
     tittle : 'Halaman Contact',
-    contacts
+    contacts,
+    msg: req.flash('msg')
   });
 });
 
@@ -93,6 +109,9 @@ app.post('/contact', [ body('nama').custom((value) => {
     });
   } else {
     addContact(req.body);
+    // kirimkan flash message
+    req.flash('msg', 'Data Kontak Berhasil Ditambahkan!');
+
     res.redirect('/contact');
   }
 
